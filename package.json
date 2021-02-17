@@ -1,0 +1,11 @@
+{
+  "name": "marsCalendar",
+  "version": "1.0.0",
+  "main": "index.js",
+  "module": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "proposal-temporal": "^0.7.0"
+  }
+}
