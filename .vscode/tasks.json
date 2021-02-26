@@ -4,10 +4,20 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build",
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "build"
+    },
+    {
       "type": "process",
-      "command": "node",
-      "args": ["${file}"],
+      "command": "npx",
+      "args": ["ts-node", "index.ts"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "label": "Run",
       "group": {
         "kind": "build",
         "isDefault": true
