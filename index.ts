@@ -1,58 +1,38 @@
 import { MarsDate } from "./marsDate.js";
-import * as TemporalModule from "proposal-temporal";
+import { Temporal } from "proposal-temporal";
+import { AiryMeanTime } from "./timeZones";
 
-const Temporal = TemporalModule.Temporal;
+class MarsTemporal {
+  private marsDate: MarsDate;
+
+  constructor(inst: Temporal.Instant) {
+    // Use that instant to convert to Mars Time
+    this.marsDate = new MarsDate(inst.epochMilliseconds);
+  }
+
+  getPlainDate() {
+    const json = this.marsDate.json;
+    return Temporal.PlainDate.from({year: json.y, month: json.m, day: json.d})
+  }
+
+  getZonedDate() {
+    const json = this.marsDate.json;
+    return Temporal.ZonedDateTime.from({year: json.y, month: json.m, day: json.d, hour: json.H, minute: json.M, second: json.s, millisecond: json.L, timeZone: new AiryMeanTime(), calendar: new MarsCalendar()})
+  }
+}
+
 class MarsCalendar extends Temporal.Calendar {
   constructor() {
     super("iso8601");
   }
 
-  year(date: any) {
-    const instant = Temporal.Instant.from(date.toZonedDateTime("UTC"));
-    const marsDate = new MarsDate(instant.epochMilliseconds);
-    return marsDate.json.y;
-  }
-
-  dateFromFields(fields: any) {
-    return Temporal.now.plainDate('UTC')
-  }
-}
-
-class WesternAmazonianTime extends Temporal.TimeZone {
-
-  constructor() {
-    super('UTC');
-  }
-
   toString() {
-    return 'Mars/Western_Amazonian_Time';
-  }
-
-  getPlainDateTimeFor(instant: TemporalModule.Temporal.Instant) {
-    const dt = Temporal.TimeZone.from('UTC').getPlainDateTimeFor(instant).withCalendar(new MarsCalendar())
-    return dt
-  }
-
-  getOffsetNanosecondsFor(/* instant */) {
-    return 0;
-  }
-
-  getNextTransition(/* instant */) {
-    return null;
-  }
-
-  getPreviousTransition(/* instant */) {
-    return null;
+    return 'mars-calendar'
   }
 
 }
 
-const date = Temporal.ZonedDateTime.from({
-  year: 2014,
-  day: 10,
-  month: 11,
-  timeZone: new WesternAmazonianTime(),
-  calendar: new MarsCalendar()
-});
-
-console.log(date.year);
+const instant = Temporal.now.instant();
+const date = new MarsTemporal(instant);
+console.log(date.getPlainDate());
+const zonedDate = date.getZonedDate();
